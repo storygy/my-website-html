@@ -1,4 +1,5 @@
-import { useState, useRef } from 'react';
+// src/components/ShareDialog.tsx
+import { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -12,8 +13,12 @@ import {
   MessageCircle, 
   Link2,
   Download,
-  ExternalLink
+  ExternalLink,
+  Globe,
+  GlobeLock,
+  AlertCircle
 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { toPng } from 'html-to-image';
 import type { AppItem } from '@/types/app';
 
@@ -22,16 +27,32 @@ interface ShareDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onShareWechat?: () => void;
+  onTogglePublic?: (app: AppItem) => void;  // 新增：切换公开状态的函数
 }
 
-export function ShareDialog({ app, open, onOpenChange, onShareWechat }: ShareDialogProps) {
+export function ShareDialog({ 
+  app, 
+  open, 
+  onOpenChange, 
+  onShareWechat,
+  onTogglePublic 
+}: ShareDialogProps) {
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState('link');
   const qrRef = useRef<HTMLDivElement>(null);
+  const [isPublic, setIsPublic] = useState(false);
+
+  // 当 app 变化时，更新本地公开状态
+  useEffect(() => {
+    if (app) {
+      setIsPublic(app.isPublic || false);
+    }
+  }, [app]);
 
   if (!app) return null;
 
-  const shareUrl = `${window.location.origin}/#/app/${app.id}`;
+  // 修改：使用新的路由格式（去掉/#/）
+  const shareUrl = `${window.location.origin}/app/${app.id}`;
   const shareTitle = app.title || app.name;
   const shareDesc = app.description || '来看看这个有趣的应用吧！';
 
@@ -72,6 +93,14 @@ export function ShareDialog({ app, open, onOpenChange, onShareWechat }: ShareDia
     window.open(shareUrl, '_blank');
   };
 
+  const handleTogglePublic = () => {
+    if (onTogglePublic) {
+      onTogglePublic(app);
+      // 乐观更新 UI
+      setIsPublic(!isPublic);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
@@ -81,6 +110,61 @@ export function ShareDialog({ app, open, onOpenChange, onShareWechat }: ShareDia
             分享应用
           </DialogTitle>
         </DialogHeader>
+
+        {/* 新增：公开状态控制 */}
+        <div className="bg-gray-50 rounded-lg p-4 mb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              {isPublic ? (
+                <>
+                  <Globe className="w-5 h-5 text-green-500" />
+                  <div>
+                    <p className="font-medium text-gray-900">已公开分享</p>
+                    <p className="text-xs text-gray-500">任何人可通过链接访问</p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <GlobeLock className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <p className="font-medium text-gray-900">私密应用</p>
+                    <p className="text-xs text-gray-500">仅你自己可见</p>
+                  </div>
+                </>
+              )}
+            </div>
+            {onTogglePublic && (
+              <Button
+                variant={isPublic ? "outline" : "default"}
+                size="sm"
+                onClick={handleTogglePublic}
+                className="gap-1"
+              >
+                {isPublic ? (
+                  <>
+                    <GlobeLock className="w-4 h-4" />
+                    设为私密
+                  </>
+                ) : (
+                  <>
+                    <Globe className="w-4 h-4" />
+                    设为公开
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* 如果不是公开的，显示提示 */}
+        {!isPublic && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4 flex gap-2">
+            <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0" />
+            <p className="text-sm text-amber-800">
+              当前应用是私密状态，分享链接仅你自己可访问。点击上方按钮设为公开后，任何人都能访问。
+            </p>
+          </div>
+        )}
 
         {/* 应用信息预览 */}
         <div className="bg-gray-50 rounded-lg p-4 mb-4">
@@ -99,6 +183,20 @@ export function ShareDialog({ app, open, onOpenChange, onShareWechat }: ShareDia
             <div className="flex-1 min-w-0">
               <h4 className="font-semibold text-gray-900 truncate">{shareTitle}</h4>
               <p className="text-sm text-gray-500 line-clamp-2 mt-1">{shareDesc}</p>
+              {/* 新增：显示公开状态标签 */}
+              <div className="mt-2">
+                {isPublic ? (
+                  <Badge className="bg-green-500 text-white text-xs">
+                    <Globe className="w-3 h-3 mr-1" />
+                    公开
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="text-xs">
+                    <GlobeLock className="w-3 h-3 mr-1" />
+                    私密
+                  </Badge>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -127,9 +225,18 @@ export function ShareDialog({ app, open, onOpenChange, onShareWechat }: ShareDia
           {/* 链接分享 */}
           <TabsContent value="link" className="space-y-4 mt-4">
             <div className="space-y-2">
-              <Label className="text-sm">分享链接</Label>
+              <Label className="text-sm flex items-center gap-1">
+                分享链接
+                {!isPublic && (
+                  <span className="text-xs text-amber-600">（私密，仅你可访问）</span>
+                )}
+              </Label>
               <div className="flex gap-2">
-                <Input value={shareUrl} readOnly className="flex-1 text-xs sm:text-sm" />
+                <Input 
+                  value={shareUrl} 
+                  readOnly 
+                  className="flex-1 text-xs sm:text-sm" 
+                />
                 <Button
                   variant="outline"
                   size="icon"
@@ -184,7 +291,9 @@ export function ShareDialog({ app, open, onOpenChange, onShareWechat }: ShareDia
                 />
               </div>
               <p className="text-sm text-gray-500 mt-3">
-                扫描二维码即可访问应用
+                {isPublic 
+                  ? '扫描二维码即可访问应用' 
+                  : '⚠️ 当前应用为私密状态，扫描后仍需登录才能访问'}
               </p>
               <Button 
                 variant="outline" 
@@ -227,6 +336,11 @@ export function ShareDialog({ app, open, onOpenChange, onShareWechat }: ShareDia
                 <div className="p-3">
                   <p className="font-medium text-gray-900 line-clamp-1 text-sm">{shareTitle}</p>
                   <p className="text-xs text-gray-500 line-clamp-2 mt-1">{shareDesc}</p>
+                  {!isPublic && (
+                    <p className="text-xs text-amber-600 mt-2">
+                      ⚠️ 私密应用，好友需要登录才能访问
+                    </p>
+                  )}
                 </div>
               </div>
 
