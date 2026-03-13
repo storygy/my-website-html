@@ -59,22 +59,6 @@ function App() {
   const [deleteAppItem, setDeleteAppItem] = useState<AppItem | null>(null);
   const [qrCodeApp, setQrCodeApp] = useState<AppItem | null>(null);
 
-  // 🆕 新增：切换公开状态函数
-const handleTogglePublic = useCallback(async (app: AppItem) => {
-  try {
-    const newPublicStatus = !app.isPublic;
-    
-    // 更新本地状态
-    updateApp(app.id, { isPublic: newPublicStatus });
-    
-    // 不需要 updatedApps 变量，直接更新即可
-  } catch (error) {
-    console.error('切换公开状态失败:', error);
-    // 失败时恢复原状态
-    updateApp(app.id, { isPublic: app.isPublic });
-  }
-}, [updateApp]);
-
   // 解析路由
   const route = hash.replace('#/', '').split('/');
   const isAppRoute = route[0] === 'app' && route[1];
@@ -104,9 +88,9 @@ const handleTogglePublic = useCallback(async (app: AppItem) => {
 
   // 过滤应用
   const filteredApps = apps.filter(app => 
-    (app.name?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
-    (app.title?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
-    (app.description?.toLowerCase() || '').includes(searchQuery.toLowerCase())
+    app.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    app.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    app.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // 处理上传
@@ -372,12 +356,11 @@ const handleTogglePublic = useCallback(async (app: AppItem) => {
               <AppCard
                 key={app.id}
                 app={app}
-                onPreview={() => setPreviewApp(app)}
+                onPreview={setPreviewApp}
                 onShare={handleShare}
-                onQrCode={() => setQrCodeApp(app)}
-                onEdit={() => setEditApp(app)}
-                onDelete={() => setDeleteAppItem(app)}
-                onTogglePublic={handleTogglePublic}
+                onQrCode={setQrCodeApp}
+                onEdit={setEditApp}
+                onDelete={setDeleteAppItem}
               />
             ))}
           </div>
@@ -414,7 +397,6 @@ const handleTogglePublic = useCallback(async (app: AppItem) => {
         open={!!shareApp}
         onOpenChange={(open) => !open && setShareApp(null)}
         onShareWechat={handleShareWechat}
-        onTogglePublic={handleTogglePublic}
       />
 
       <PreviewDialog

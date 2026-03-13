@@ -8,7 +8,6 @@ export interface AppItem {
   createdAt: number;
   updatedAt: number;
   shareCount: number;
-  isPublic: boolean;
 }
 
 export interface ShareConfig {

@@ -1,4 +1,3 @@
-// src/components/AppCard.tsx
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,9 +9,7 @@ import {
   Edit2, 
   Trash2, 
   Copy,
-  Check,
-  Globe,
-  GlobeLock
+  Check
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -21,7 +18,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
 import type { AppItem } from '@/types/app';
 
 interface AppCardProps {
@@ -31,33 +27,17 @@ interface AppCardProps {
   onQrCode: (app: AppItem) => void;
   onEdit: (app: AppItem) => void;
   onDelete: (app: AppItem) => void;
-  onTogglePublic?: (app: AppItem) => void;  // 新增：切换公开状态
 }
 
-export function AppCard({ 
-  app, 
-  onPreview, 
-  onShare, 
-  onQrCode, 
-  onEdit, 
-  onDelete,
-  onTogglePublic 
-}: AppCardProps) {
+export function AppCard({ app, onPreview, onShare, onQrCode, onEdit, onDelete }: AppCardProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopyLink = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const shareUrl = `${window.location.origin}/app/${app.id}`;
+    const shareUrl = `${window.location.origin}/#/app/${app.id}`;
     await navigator.clipboard.writeText(shareUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleTogglePublic = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onTogglePublic) {
-      onTogglePublic(app);
-    }
   };
 
   const formatDate = (timestamp: number) => {
@@ -67,9 +47,6 @@ export function AppCard({
       day: 'numeric',
     });
   };
-
-  // 生成分享链接
-  const shareUrl = `${window.location.origin}/app/${app.id}`;
 
   return (
     <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 border-gray-200">
@@ -86,21 +63,6 @@ export function AppCard({
             <div className="text-6xl">🚀</div>
           </div>
         )}
-        
-        {/* 公开状态标签 */}
-        <div className="absolute top-2 left-2">
-          {app.isPublic ? (
-            <Badge className="bg-green-500 hover:bg-green-600 text-white">
-              <Globe className="w-3 h-3 mr-1" />
-              已公开
-            </Badge>
-          ) : (
-            <Badge variant="outline" className="bg-white/90">
-              <GlobeLock className="w-3 h-3 mr-1" />
-              私密
-            </Badge>
-          )}
-        </div>
         
         {/* 悬浮操作层 */}
         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
@@ -122,17 +84,6 @@ export function AppCard({
             <Share2 className="w-4 h-4" />
             分享
           </Button>
-          {onTogglePublic && (
-            <Button
-              size="sm"
-              variant={app.isPublic ? "default" : "secondary"}
-              onClick={handleTogglePublic}
-              className="gap-1"
-            >
-              <Globe className="w-4 h-4" />
-              {app.isPublic ? '取消公开' : '公开'}
-            </Button>
-          )}
         </div>
 
         {/* 更多操作菜单 */}
@@ -156,24 +107,6 @@ export function AppCard({
                 <QrCode className="w-4 h-4 mr-2" />
                 二维码
               </DropdownMenuItem>
-              
-              {/* 新增：公开/私密切换菜单项 */}
-              {onTogglePublic && (
-                <DropdownMenuItem onClick={handleTogglePublic}>
-                  {app.isPublic ? (
-                    <>
-                      <GlobeLock className="w-4 h-4 mr-2" />
-                      设为私密
-                    </>
-                  ) : (
-                    <>
-                      <Globe className="w-4 h-4 mr-2" />
-                      设为公开
-                    </>
-                  )}
-                </DropdownMenuItem>
-              )}
-              
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => onEdit(app)}>
                 <Edit2 className="w-4 h-4 mr-2" />
@@ -215,22 +148,19 @@ export function AppCard({
           </div>
           
           <div className="flex items-center gap-1">
-            {/* 如果是公开的，显示复制链接按钮 */}
-            {app.isPublic && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={handleCopyLink}
-                title="复制分享链接"
-              >
-                {copied ? (
-                  <Check className="w-4 h-4 text-green-500" />
-                ) : (
-                  <Copy className="w-4 h-4" />
-                )}
-              </Button>
-            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={handleCopyLink}
+              title="复制链接"
+            >
+              {copied ? (
+                <Check className="w-4 h-4 text-green-500" />
+              ) : (
+                <Copy className="w-4 h-4" />
+              )}
+            </Button>
             <Button
               variant="ghost"
               size="icon"
@@ -242,14 +172,6 @@ export function AppCard({
             </Button>
           </div>
         </div>
-
-        {/* 如果是公开的，显示分享链接预览 */}
-        {app.isPublic && (
-          <div className="mt-2 p-2 bg-gray-50 rounded-md text-xs truncate">
-            <span className="text-gray-500">分享链接：</span>
-            <span className="text-blue-600 font-mono">{shareUrl}</span>
-          </div>
-        )}
       </CardContent>
     </Card>
   );
