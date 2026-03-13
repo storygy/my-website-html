@@ -32,6 +32,7 @@ export function toDbFormat(app: AppItem, userId: string) {
     thumbnail: app.thumbnail,
     html_content: app.htmlContent,
     share_count: app.shareCount,
+    is_public: app.isPublic || false,  // 👈 添加这一行
     created_at: new Date(app.createdAt).toISOString(),
     updated_at: new Date(app.updatedAt).toISOString(),
   };
@@ -47,6 +48,7 @@ export function fromDbFormat(dbApp: any): AppItem {
     thumbnail: dbApp.thumbnail,
     htmlContent: dbApp.html_content,
     shareCount: dbApp.share_count || 0,
+    isPublic: dbApp.is_public || false,  // 👈 添加这一行
     createdAt: new Date(dbApp.created_at).getTime(),
     updatedAt: new Date(dbApp.updated_at).getTime(),
   };

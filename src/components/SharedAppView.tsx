@@ -1,7 +1,7 @@
 // SharedAppView.tsx
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { supabase } from '../supabaseClient';
+import { supabase } from '../lib/supabase'; 
 
 // 定义应用数据类型
 interface AppData {

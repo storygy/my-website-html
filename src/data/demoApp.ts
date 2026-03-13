@@ -1,3 +1,1416 @@
 import type { AppItem } from '@/types/app';
 
-export const demoApp: AppItem = {"id": "demo-math-app-001", "name": "乘法教学3", "title": "数学小超人：乘除法大冒险", "description": "适合7岁小朋友的乘除法学习游戏，包含积木工厂、糖果商店、口诀探险和冒险挑战四个模块", "thumbnail": null, "htmlContent": "乘法教学3\n<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>数学小超人：乘除法大冒险</title>\n    <style>\n        * {\n            margin: 0;\n            padding: 0;\n            box-sizing: border-box;\n        }\n\n        body {\n            font-family: 'Comic Sans MS', '微软雅黑', sans-serif;\n            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n            min-height: 100vh;\n            overflow-x: hidden;\n        }\n\n        .container {\n            max-width: 1200px;\n            margin: 0 auto;\n            padding: 20px;\n        }\n\n        header {\n            text-align: center;\n            color: white;\n            padding: 30px 0;\n            animation: bounce 2s infinite;\n        }\n\n        @keyframes bounce {\n            0%, 100% { transform: translateY(0); }\n            50% { transform: translateY(-10px); }\n        }\n\n        h1 {\n            font-size: 3em;\n            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);\n            margin-bottom: 10px;\n        }\n\n        .subtitle {\n            font-size: 1.3em;\n            opacity: 0.95;\n        }\n\n        .nav-tabs {\n            display: flex;\n            justify-content: center;\n            gap: 15px;\n            margin: 30px 0;\n            flex-wrap: wrap;\n        }\n\n        .tab-btn {\n            padding: 15px 30px;\n            border: none;\n            border-radius: 50px;\n            font-size: 1.2em;\n            cursor: pointer;\n            transition: all 0.3s;\n            font-weight: bold;\n            box-shadow: 0 4px 15px rgba(0,0,0,0.2);\n        }\n\n        .tab-btn.active {\n            transform: scale(1.1);\n            box-shadow: 0 6px 20px rgba(0,0,0,0.3);\n        }\n\n        .tab-btn:nth-child(1) { background: #ff6b6b; color: white; }\n        .tab-btn:nth-child(2) { background: #4ecdc4; color: white; }\n        .tab-btn:nth-child(3) { background: #ffe66d; color: #333; }\n        .tab-btn:nth-child(4) { background: #a8e6cf; color: #333; }\n\n        .tab-btn:hover {\n            transform: translateY(-3px);\n        }\n\n        .game-section {\n            display: none;\n            background: white;\n            border-radius: 30px;\n            padding: 30px;\n            margin: 20px 0;\n            box-shadow: 0 10px 40px rgba(0,0,0,0.2);\n            animation: fadeIn 0.5s;\n        }\n\n        .game-section.active {\n            display: block;\n        }\n\n        @keyframes fadeIn {\n            from { opacity: 0; transform: translateY(20px); }\n            to { opacity: 1; transform: translateY(0); }\n        }\n\n        .section-title {\n            color: #5a67d8;\n            font-size: 2em;\n            margin-bottom: 20px;\n            text-align: center;\n        }\n\n        /* 积木工厂样式 */\n        .block-factory {\n            text-align: center;\n        }\n\n        .controls {\n            margin: 20px 0;\n            display: flex;\n            justify-content: center;\n            gap: 20px;\n            flex-wrap: wrap;\n        }\n\n        .input-group {\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            gap: 5px;\n        }\n\n        .input-group label {\n            font-weight: bold;\n            color: #555;\n        }\n\n        input[type=\"number\"] {\n            width: 80px;\n            padding: 10px;\n            font-size: 1.5em;\n            text-align: center;\n            border: 3px solid #ddd;\n            border-radius: 15px;\n            transition: border-color 0.3s;\n        }\n\n        input[type=\"number\"]:focus {\n            outline: none;\n            border-color: #667eea;\n        }\n\n        .btn-primary {\n            background: linear-gradient(45deg, #667eea, #764ba2);\n            color: white;\n            border: none;\n            padding: 15px 40px;\n            font-size: 1.2em;\n            border-radius: 30px;\n            cursor: pointer;\n            transition: transform 0.2s;\n            font-weight: bold;\n            margin: 10px;\n        }\n\n        .btn-primary:hover {\n            transform: scale(1.05);\n        }\n\n        .blocks-container {\n            display: flex;\n            flex-wrap: wrap;\n            gap: 20px;\n            justify-content: center;\n            margin: 30px 0;\n            min-height: 200px;\n            padding: 20px;\n            background: #f7fafc;\n            border-radius: 20px;\n            border: 3px dashed #cbd5e0;\n        }\n\n        .group {\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            gap: 5px;\n            padding: 10px;\n            background: white;\n            border-radius: 15px;\n            box-shadow: 0 2px 10px rgba(0,0,0,0.1);\n        }\n\n        .block {\n            width: 50px;\n            height: 50px;\n            border-radius: 10px;\n            display: flex;\n            align-items: center;\n            justify-content: center;\n            font-weight: bold;\n            font-size: 1.2em;\n            color: white;\n            animation: popIn 0.3s;\n            cursor: pointer;\n            transition: transform 0.2s;\n        }\n\n        .block:hover {\n            transform: rotate(5deg) scale(1.1);\n        }\n\n        @keyframes popIn {\n            0% { transform: scale(0); }\n            80% { transform: scale(1.1); }\n            100% { transform: scale(1); }\n        }\n\n        .explanation {\n            background: #e6fffa;\n            border-left: 5px solid #38b2ac;\n            padding: 20px;\n            margin: 20px 0;\n            border-radius: 10px;\n            font-size: 1.2em;\n            line-height: 1.6;\n        }\n\n        .math-formula {\n            font-size: 2em;\n            color: #5a67d8;\n            font-weight: bold;\n            margin: 20px 0;\n            text-align: center;\n            font-family: 'Courier New', monospace;\n        }\n\n        /* 糖果商店样式 */\n        .candy-shop {\n            text-align: center;\n        }\n\n        .shop-scene {\n            display: flex;\n            justify-content: center;\n            align-items: flex-end;\n            gap: 40px;\n            margin: 30px 0;\n            flex-wrap: wrap;\n        }\n\n        .shelf {\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            gap: 10px;\n        }\n\n        .candy-jar {\n            width: 120px;\n            height: 150px;\n            background: linear-gradient(to bottom, rgba(255,255,255,0.3), rgba(255,255,255,0.1));\n            border: 4px solid #ffb6c1;\n            border-radius: 20px 20px 40px 40px;\n            position: relative;\n            overflow: hidden;\n            cursor: pointer;\n            transition: transform 0.3s;\n        }\n\n        .candy-jar:hover {\n            transform: scale(1.05);\n        }\n\n        .candy {\n            width: 30px;\n            height: 30px;\n            border-radius: 50%;\n            position: absolute;\n            animation: float 3s infinite ease-in-out;\n        }\n\n        @keyframes float {\n            0%, 100% { transform: translateY(0); }\n            50% { transform: translateY(-10px); }\n        }\n\n        .customer {\n            font-size: 4em;\n            animation: wiggle 2s infinite;\n        }\n\n        @keyframes wiggle {\n            0%, 100% { transform: rotate(-5deg); }\n            50% { transform: rotate(5deg); }\n        }\n\n        .speech-bubble {\n            background: white;\n            border: 3px solid #333;\n            border-radius: 20px;\n            padding: 15px;\n            position: relative;\n            max-width: 250px;\n            font-size: 1.1em;\n            margin-bottom: 10px;\n        }\n\n        .speech-bubble::after {\n            content: '';\n            position: absolute;\n            bottom: -10px;\n            left: 50%;\n            transform: translateX(-50%);\n            border-width: 10px 10px 0;\n            border-style: solid;\n            border-color: #333 transparent transparent;\n        }\n\n        .price-tag {\n            background: #ffe66d;\n            padding: 5px 15px;\n            border-radius: 20px;\n            font-weight: bold;\n            margin-top: 5px;\n        }\n\n        /* 口诀探险样式 */\n        .memory-game {\n            text-align: center;\n        }\n\n        .progress-bar {\n            width: 100%;\n            height: 30px;\n            background: #e2e8f0;\n            border-radius: 15px;\n            overflow: hidden;\n            margin: 20px 0;\n            position: relative;\n        }\n\n        .progress-fill {\n            height: 100%;\n            background: linear-gradient(90deg, #48bb78, #38a169);\n            width: 0%;\n            transition: width 0.5s;\n            display: flex;\n            align-items: center;\n            justify-content: center;\n            color: white;\n            font-weight: bold;\n        }\n\n        .card-grid {\n            display: grid;\n            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));\n            gap: 15px;\n            max-width: 800px;\n            margin: 30px auto;\n        }\n\n        .memory-card {\n            aspect-ratio: 1;\n            background: linear-gradient(135deg, #667eea, #764ba2);\n            border-radius: 15px;\n            display: flex;\n            align-items: center;\n            justify-content: center;\n            font-size: 1.5em;\n            color: white;\n            cursor: pointer;\n            transition: all 0.3s;\n            transform-style: preserve-3d;\n            position: relative;\n        }\n\n        .memory-card:hover {\n            transform: translateY(-5px);\n            box-shadow: 0 10px 20px rgba(0,0,0,0.2);\n        }\n\n        .memory-card.flipped {\n            background: white;\n            color: #333;\n            border: 3px solid #667eea;\n        }\n\n        .memory-card.matched {\n            background: #48bb78;\n            animation: pulse 0.5s;\n        }\n\n        @keyframes pulse {\n            0%, 100% { transform: scale(1); }\n            50% { transform: scale(1.1); }\n        }\n\n        /* 冒险挑战样式 */\n        .adventure-game {\n            text-align: center;\n        }\n\n        .level-selector {\n            display: flex;\n            justify-content: center;\n            gap: 15px;\n            margin: 20px 0;\n            flex-wrap: wrap;\n        }\n\n        .level-btn {\n            width: 60px;\n            height: 60px;\n            border-radius: 50%;\n            border: 4px solid #ddd;\n            background: white;\n            font-size: 1.5em;\n            font-weight: bold;\n            cursor: pointer;\n            transition: all 0.3s;\n        }\n\n        .level-btn.unlocked {\n            border-color: #48bb78;\n            background: #c6f6d5;\n        }\n\n        .level-btn.current {\n            border-color: #667eea;\n            background: #667eea;\n            color: white;\n            animation: glow 1.5s infinite;\n        }\n\n        @keyframes glow {\n            0%, 100% { box-shadow: 0 0 5px #667eea; }\n            50% { box-shadow: 0 0 20px #667eea, 0 0 40px #667eea; }\n        }\n\n        .question-box {\n            background: linear-gradient(135deg, #f6f8fb, #e9edf5);\n            border-radius: 20px;\n            padding: 40px;\n            margin: 30px 0;\n            border: 3px solid #cbd5e0;\n        }\n\n        .question-text {\n            font-size: 2em;\n            color: #2d3748;\n            margin-bottom: 30px;\n        }\n\n        .answer-options {\n            display: grid;\n            grid-template-columns: repeat(2, 1fr);\n            gap: 20px;\n            max-width: 500px;\n            margin: 0 auto;\n        }\n\n        .option-btn {\n            padding: 20px;\n            font-size: 1.5em;\n            border: 3px solid #cbd5e0;\n            background: white;\n            border-radius: 15px;\n            cursor: pointer;\n            transition: all 0.2s;\n        }\n\n        .option-btn:hover {\n            background: #e6fffa;\n            border-color: #38b2ac;\n            transform: translateY(-2px);\n        }\n\n        .option-btn.correct {\n            background: #c6f6d5;\n            border-color: #48bb78;\n            animation: correct 0.5s;\n        }\n\n        .option-btn.wrong {\n            background: #fed7d7;\n            border-color: #f56565;\n            animation: shake 0.5s;\n        }\n\n        @keyframes correct {\n            0%, 100% { transform: scale(1); }\n            50% { transform: scale(1.1); }\n        }\n\n        @keyframes shake {\n            0%, 100% { transform: translateX(0); }\n            25% { transform: translateX(-10px); }\n            75% { transform: translateX(10px); }\n        }\n\n        .stars {\n            font-size: 2em;\n            margin: 20px 0;\n        }\n\n        .hint-box {\n            background: #fffaf0;\n            border: 2px solid #f6ad55;\n            border-radius: 10px;\n            padding: 15px;\n            margin: 20px 0;\n            display: none;\n        }\n\n        .hint-box.show {\n            display: block;\n            animation: fadeIn 0.5s;\n        }\n\n        /* 打赏区域样式 */\n        .donate-section {\n            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);\n            border-radius: 30px;\n            padding: 40px;\n            margin: 40px 0;\n            text-align: center;\n            box-shadow: 0 10px 30px rgba(0,0,0,0.15);\n            border: 4px dashed #ff8c69;\n            position: relative;\n            overflow: hidden;\n        }\n\n        .donate-section::before {\n            content: '☕';\n            position: absolute;\n            top: -20px;\n            right: -20px;\n            font-size: 100px;\n            opacity: 0.1;\n            transform: rotate(15deg);\n        }\n\n        .donate-title {\n            font-size: 2em;\n            color: #e8532d;\n            margin-bottom: 15px;\n            font-weight: bold;\n            text-shadow: 2px 2px 0px rgba(255,255,255,0.5);\n        }\n\n        .donate-desc {\n            font-size: 1.2em;\n            color: #744210;\n            margin-bottom: 25px;\n            line-height: 1.6;\n        }\n\n        .donate-btn {\n            background: linear-gradient(45deg, #ff6b6b, #ee5a24);\n            color: white;\n            border: none;\n            padding: 20px 50px;\n            font-size: 1.4em;\n            border-radius: 50px;\n            cursor: pointer;\n            transition: all 0.3s;\n            font-weight: bold;\n            box-shadow: 0 6px 20px rgba(238, 90, 36, 0.4);\n            position: relative;\n            overflow: hidden;\n            animation: pulse-btn 2s infinite;\n        }\n\n        @keyframes pulse-btn {\n            0%, 100% { transform: scale(1); box-shadow: 0 6px 20px rgba(238, 90, 36, 0.4); }\n            50% { transform: scale(1.05); box-shadow: 0 8px 30px rgba(238, 90, 36, 0.6); }\n        }\n\n        .donate-btn:hover {\n            transform: translateY(-3px) scale(1.1);\n            box-shadow: 0 10px 40px rgba(238, 90, 36, 0.5);\n        }\n\n        .donate-btn::after {\n            content: '🥤';\n            margin-left: 10px;\n            font-size: 1.2em;\n        }\n\n        .donate-features {\n            display: flex;\n            justify-content: center;\n            gap: 30px;\n            margin-top: 25px;\n            flex-wrap: wrap;\n        }\n\n        .feature-item {\n            background: rgba(255,255,255,0.6);\n            padding: 10px 20px;\n            border-radius: 20px;\n            font-size: 0.95em;\n            color: #744210;\n            font-weight: bold;\n        }\n\n        /* 感谢动画模态框 */\n        .thanks-modal {\n            display: none;\n            position: fixed;\n            top: 0;\n            left: 0;\n            width: 100%;\n            height: 100%;\n            background: rgba(0,0,0,0.8);\n            z-index: 2000;\n            justify-content: center;\n            align-items: center;\n            flex-direction: column;\n        }\n\n        .thanks-modal.show {\n            display: flex;\n            animation: fadeIn 0.5s;\n        }\n\n        .thanks-content {\n            background: white;\n            border-radius: 40px;\n            padding: 50px;\n            max-width: 600px;\n            text-align: center;\n            position: relative;\n            animation: slideUp 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);\n            box-shadow: 0 20px 60px rgba(0,0,0,0.3);\n            border: 5px solid #ffd93d;\n        }\n\n        @keyframes slideUp {\n            from { transform: translateY(100px) scale(0.8); opacity: 0; }\n            to { transform: translateY(0) scale(1); opacity: 1; }\n        }\n\n        .thanks-emoji {\n            font-size: 5em;\n            margin-bottom: 20px;\n            animation: crazy-dance 1s infinite;\n        }\n\n        @keyframes crazy-dance {\n            0%, 100% { transform: rotate(-10deg) scale(1); }\n            25% { transform: rotate(10deg) scale(1.2); }\n            50% { transform: rotate(-10deg) scale(1); }\n            75% { transform: rotate(10deg) scale(1.2); }\n        }\n\n        .thanks-title {\n            font-size: 2.5em;\n            color: #e8532d;\n            margin-bottom: 20px;\n            font-weight: bold;\n            text-shadow: 3px 3px 0px #ffeaa7;\n        }\n\n        .thanks-text {\n            font-size: 1.3em;\n            color: #2d3436;\n            line-height: 1.8;\n            margin-bottom: 30px;\n        }\n\n        .thanks-joke {\n            background: #fff5f5;\n            border-left: 5px solid #ff6b6b;\n            padding: 20px;\n            margin: 20px 0;\n            border-radius: 15px;\n            font-size: 1.1em;\n            color: #d63031;\n            font-style: italic;\n            text-align: left;\n        }\n\n        .close-thanks {\n            background: linear-gradient(45deg, #00b894, #00cec9);\n            color: white;\n            border: none;\n            padding: 15px 40px;\n            font-size: 1.2em;\n            border-radius: 30px;\n            cursor: pointer;\n            font-weight: bold;\n            transition: transform 0.2s;\n        }\n\n        .close-thanks:hover {\n            transform: scale(1.1);\n        }\n\n        .flying-cola {\n            position: absolute;\n            font-size: 3em;\n            animation: fly-around 3s linear infinite;\n            pointer-events: none;\n        }\n\n        @keyframes fly-around {\n            0% { transform: translate(0, 0) rotate(0deg); }\n            25% { transform: translate(100px, -100px) rotate(90deg); }\n            50% { transform: translate(0, -200px) rotate(180deg); }\n            75% { transform: translate(-100px, -100px) rotate(270deg); }\n            100% { transform: translate(0, 0) rotate(360deg); }\n        }\n\n        /* 响应式设计 */\n        @media (max-width: 768px) {\n            h1 { font-size: 2em; }\n            .section-title { font-size: 1.5em; }\n            .tab-btn { padding: 10px 20px; font-size: 1em; }\n            .blocks-container { gap: 10px; }\n            .block { width: 40px; height: 40px; font-size: 1em; }\n            .donate-title { font-size: 1.5em; }\n            .thanks-content { padding: 30px 20px; margin: 20px; }\n            .thanks-title { font-size: 1.8em; }\n        }\n\n        /* 庆祝动画 */\n        .celebration {\n            position: fixed;\n            top: 0;\n            left: 0;\n            width: 100%;\n            height: 100%;\n            pointer-events: none;\n            z-index: 1000;\n            display: none;\n        }\n\n        .confetti {\n            position: absolute;\n            width: 10px;\n            height: 10px;\n            background: #f0f;\n            animation: fall linear forwards;\n        }\n\n        @keyframes fall {\n            to {\n                transform: translateY(100vh) rotate(360deg);\n                opacity: 0;\n            }\n        }\n\n        .score-board {\n            position: fixed;\n            top: 20px;\n            right: 20px;\n            background: white;\n            padding: 15px 25px;\n            border-radius: 50px;\n            box-shadow: 0 4px 15px rgba(0,0,0,0.2);\n            font-weight: bold;\n            font-size: 1.2em;\n            color: #5a67d8;\n            z-index: 100;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"score-board\">⭐ 积分: <span id=\"totalScore\">0</span></div>\n    \n    <div class=\"container\">\n        <header>\n            <h1> 数学小超人</h1>\n            <p class=\"subtitle\">乘除法大冒险 · 适合7岁小朋友</p>\n        </header>\n\n        <div class=\"nav-tabs\">\n            <button class=\"tab-btn active\" onclick=\"switchTab('blocks')\"> 积木工厂</button>\n            <button class=\"tab-btn\" onclick=\"switchTab('candy')\"> 糖果商店</button>\n            <button class=\"tab-btn\" onclick=\"switchTab('memory')\">🧠 口诀探险</button>\n            <button class=\"tab-btn\" onclick=\"switchTab('adventure')\">⚔️ 冒险挑战</button>\n        </div>\n\n        <!-- 积木工厂：理解乘法本质 -->\n        <section id=\"blocks\" class=\"game-section active\">\n            <h2 class=\"section-title\"> 积木工厂：乘法是\"几个几\"</h2>\n            <div class=\"block-factory\">\n                <p style=\"font-size: 1.2em; color: #666; margin-bottom: 20px;\">\n                    小朋友，我们来玩积木！<br>\n                    选择<strong>每堆几个</strong>和<strong>有几堆</strong>，看看乘法是怎么算的～\n                </p>\n                \n                <div class=\"controls\">\n                    <div class=\"input-group\">\n                        <label>每堆几个？</label>\n                        <input type=\"number\" id=\"blockPerGroup\" min=\"1\" max=\"9\" value=\"3\">\n                    </div>\n                    <div style=\"font-size: 2em; color: #999;\">×</div>\n                    <div class=\"input-group\">\n                        <label>有几堆？</label>\n                        <input type=\"number\" id=\"groupCount\" min=\"1\" max=\"9\" value=\"4\">\n                    </div>\n                    <div style=\"font-size: 2em; color: #999;\">=</div>\n                    <div class=\"input-group\">\n                        <label>总共？</label>\n                        <input type=\"number\" id=\"totalBlocks\" readonly style=\"background: #f0f0f0;\">\n                    </div>\n                </div>\n\n                <button class=\"btn-primary\" onclick=\"generateBlocks()\">生成积木！</button>\n                \n                <div class=\"blocks-container\" id=\"blocksContainer\"></div>\n                \n                <div class=\"explanation\" id=\"blockExplanation\" style=\"display: none;\">\n                    <strong> 小发现：</strong>\n                    <span id=\"explanationText\"></span>\n                </div>\n\n                <div class=\"math-formula\" id=\"blockFormula\"></div>\n            </div>\n        </section>\n\n        <!-- 糖果商店：生活场景应用 -->\n        <section id=\"candy\" class=\"game-section\">\n            <h2 class=\"section-title\"> 糖果商店：乘法的用处</h2>\n            <div class=\"candy-shop\">\n                <p style=\"font-size: 1.2em; color: #666; margin-bottom: 20px;\">\n                    小熊来买糖啦！帮它算一算需要多少钱？\n                </p>\n\n                <div class=\"shop-scene\">\n                    <div class=\"shelf\">\n                        <div class=\"candy-jar\" id=\"candyJar\" onclick=\"shakeJar()\">\n                            <!-- 糖果由JS生成 -->\n                        </div>\n                        <div class=\"price-tag\">每个 <span id=\"candyPrice\">2</span> 元</div>\n                    </div>\n                    \n                    <div style=\"font-size: 3em; color: #999;\">×</div>\n                    \n                    <div class=\"customer-area\">\n                        <div class=\"speech-bubble\" id=\"customerSpeech\">\n                            我要买 <strong id=\"wantCount\">5</strong> 个糖果！<br>\n                            一共需要多少钱？\n                        </div>\n                        <div class=\"customer\"></div>\n                    </div>\n                </div>\n\n                <div class=\"controls\">\n                    <button class=\"btn-primary\" onclick=\"checkCandyAnswer()\" id=\"calcBtn\">算一算</button>\n                    <button class=\"btn-primary\" onclick=\"newCandyProblem()\" style=\"background: linear-gradient(45deg, #f093fb, #f5576c);\">下一题</button>\n                </div>\n\n                <div class=\"explanation\" id=\"candyExplanation\" style=\"display: none;\">\n                    <strong> 解题思路：</strong>\n                    <div id=\"candySolution\"></div>\n                </div>\n\n                <div style=\"margin-top: 30px; padding: 20px; background: #fff5f5; border-radius: 15px;\">\n                    <h3 style=\"color: #e53e3e; margin-bottom: 10px;\"> 游戏玩法：</h3>\n                    <p>1. 点击糖果罐数一数有多少个糖果</p>\n                    <p>2. 每个糖果的价格 × 个数 = 总价格</p>\n                    <p>3. 这就是乘法在生活中的用法！</p>\n                </div>\n            </div>\n        </section>\n\n        <!-- 口诀探险：记忆游戏 -->\n        <section id=\"memory\" class=\"game-section\">\n            <h2 class=\"section-title\">🧠 口诀探险：找朋友</h2>\n            <div class=\"memory-game\">\n                <p style=\"font-size: 1.2em; color: #666; margin-bottom: 20px;\">\n                    翻开卡片，找到算式和答案的配对！<br>\n                    比如 \"3×4\" 和 \"12\" 是好朋友～\n                </p>\n\n                <div class=\"progress-bar\">\n                    <div class=\"progress-fill\" id=\"memoryProgress\">0%</div>\n                </div>\n\n                <div class=\"card-grid\" id=\"memoryGrid\"></div>\n\n                <div class=\"controls\">\n                    <button class=\"btn-primary\" onclick=\"initMemoryGame()\">重新开始</button>\n                    <select id=\"memoryLevel\" onchange=\"initMemoryGame()\" style=\"padding: 10px; font-size: 1.1em; border-radius: 10px; border: 2px solid #ddd;\">\n                        <option value=\"easy\">简单 (1-5口诀)</option>\n                        <option value=\"medium\">中等 (1-7口诀)</option>\n                        <option value=\"hard\">困难 (1-9口诀)</option>\n                    </select>\n                </div>\n\n                <div class=\"hint-box\" id=\"memoryHint\">\n                     <strong>记忆小窍门：</strong> 先记住你会的，比如2×5=10（像手指），5×5=25（五五二十五）！\n                </div>\n            </div>\n        </section>\n\n        <!-- 冒险挑战：综合练习 -->\n        <section id=\"adventure\" class=\"game-section\">\n            <h2 class=\"section-title\">⚔️ 冒险挑战：小勇士试炼</h2>\n            <div class=\"adventure-game\">\n                <p style=\"font-size: 1.2em; color: #666; margin-bottom: 20px;\">\n                    闯过10关，成为乘除法小超人！\n                </p>\n\n                <div class=\"level-selector\" id=\"levelSelector\"></div>\n\n                <div class=\"question-box\" id=\"questionBox\">\n                    <div class=\"question-text\" id=\"questionText\">点击上面的关卡开始冒险！</div>\n                    <div class=\"answer-options\" id=\"answerOptions\"></div>\n                </div>\n\n                <div class=\"hint-box\" id=\"adventureHint\">\n                     <strong>提示：</strong> <span id=\"hintText\"></span>\n                </div>\n\n                <div class=\"stars\" id=\"starDisplay\"></div>\n            </div>\n        </section>\n\n        <!-- 打赏区域 -->\n        <section class=\"donate-section\">\n            <div class=\"donate-title\">🥤 请作者喝个可乐！</div>\n            <div class=\"donate-desc\">\n                如果这个工具帮到了你家小宝贝<br>\n                3块钱，让作者熬夜写代码的手不再颤抖～<br>\n                <small style=\"color: #999;\">（或者让小朋友用刚学的乘法算算：1瓶可乐3元，作者想喝2瓶要多少钱？）</small>\n            </div>\n            \n            <button class=\"donate-btn\" onclick=\"openDonate()\">\n                3元请作者喝个可乐\n            </button>\n            \n            <div class=\"donate-features\">\n                <div class=\"feature-item\"> 永久免费使用</div>\n                <div class=\"feature-item\"> 持续更新内容</div>\n                <div class=\"feature-item\">❤️ 支持教育公益</div>\n            </div>\n        </section>\n\n        <footer style=\"text-align: center; color: rgba(255,255,255,0.8); padding: 20px; font-size: 0.9em;\">\n            <p>Made with 🧡 for 7-year-old math heroes | 让数学变得好玩起来</p>\n        </footer>\n    </div>\n\n    <!-- 感谢动画模态框 -->\n    <div class=\"thanks-modal\" id=\"thanksModal\" onclick=\"closeThanks(event)\">\n        <div class=\"thanks-content\" onclick=\"event.stopPropagation()\">\n            <div class=\"thanks-emoji\">🥤🥤</div>\n            <div class=\"thanks-title\">哇！真的假的！</div>\n            <div class=\"thanks-text\">\n                <strong>这位家长/小朋友，您太客气了！</strong><br><br>\n                您的3元巨款已收到！<br>\n                作者正在飞奔去便利店买可乐...<br>\n                <em style=\"color: #e8532d; font-size: 0.9em;\">（如果便利店关门了，我就买瓶矿泉水假装是可乐）</em>\n            </div>\n            \n            <div class=\"thanks-joke\">\n                <strong> 冷知识：</strong><br>\n                您刚才的打赏动作，比小朋友算对一道乘法题还快！<br>\n                建议让小朋友算一下：如果每天3个人打赏，作者一周能买几瓶可乐？<br>\n                <small>（答案：21瓶，会喝撑的，建议分我一点）</small>\n            </div>\n\n            <div style=\"margin: 20px 0; padding: 15px; background: #e8f5e9; border-radius: 15px; font-size: 1em; color: #2e7d32;\">\n                <strong> 特别承诺：</strong><br>\n                您的支持将用于：<br>\n                1. 购买更多咖啡因 ☕<br>\n                2. 修复bug时保持清醒 <br>\n                3. 给服务器续命（它快饿死了）️\n            </div>\n\n            <button class=\"close-thanks\" onclick=\"closeThanks()\">\n                关闭（作者去喝可乐了）‍♂️\n            </button>\n\n            <div style=\"margin-top: 20px; font-size: 0.9em; color: #999;\">\n                <em>P.S. 如果小朋友问\"为什么要给钱\"，您可以告诉他：<br>\n                \"这是给努力工作的程序员的奖励，就像你考100分妈妈给你买玩具一样！\"</em>\n            </div>\n        </div>\n        \n        <!-- 飞舞的可乐 -->\n        <div class=\"flying-cola\" style=\"top: 10%; left: 10%; animation-delay: 0s;\">🥤</div>\n        <div class=\"flying-cola\" style=\"top: 20%; right: 15%; animation-delay: 0.5s;\">🥤</div>\n        <div class=\"flying-cola\" style=\"bottom: 30%; left: 20%; animation-delay: 1s;\">🥤</div>\n        <div class=\"flying-cola\" style=\"bottom: 20%; right: 10%; animation-delay: 1.5s;\">🥤</div>\n        <div class=\"flying-cola\" style=\"top: 50%; left: 5%; animation-delay: 2s;\">🥤</div>\n        <div class=\"flying-cola\" style=\"top: 60%; right: 5%; animation-delay: 2.5s;\">🥤</div>\n    </div>\n\n    <div class=\"celebration\" id=\"celebration\"></div>\n\n    <script>\n        // 全局状态\n        let totalScore = 0;\n        let currentLevel = 1;\n        let unlockedLevels = 1;\n        let memoryPairs = [];\n        let flippedCards = [];\n        let matchedPairs = 0;\n        let hasDonated = false;\n\n        // 切换标签页\n        function switchTab(tabName) {\n            document.querySelectorAll('.game-section').forEach(section => {\n                section.classList.remove('active');\n            });\n            document.querySelectorAll('.tab-btn').forEach(btn => {\n                btn.classList.remove('active');\n            });\n            \n            document.getElementById(tabName).classList.add('active');\n            event.target.classList.add('active');\n            \n            if (tabName === 'memory') initMemoryGame();\n            if (tabName === 'adventure') initAdventure();\n        }\n\n        // 更新积分\n        function addScore(points) {\n            totalScore += points;\n            document.getElementById('totalScore').textContent = totalScore;\n            celebrate();\n        }\n\n        // 庆祝动画\n        function celebrate() {\n            const celebration = document.getElementById('celebration');\n            celebration.style.display = 'block';\n            celebration.innerHTML = '';\n            \n            const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#a8e6cf', '#ff8b94'];\n            \n            for (let i = 0; i < 50; i++) {\n                const confetti = document.createElement('div');\n                confetti.className = 'confetti';\n                confetti.style.left = Math.random() * 100 + '%';\n                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];\n                confetti.style.animationDuration = (Math.random() * 2 + 1) + 's';\n                confetti.style.animationDelay = Math.random() * 0.5 + 's';\n                celebration.appendChild(confetti);\n            }\n            \n            setTimeout(() => {\n                celebration.style.display = 'none';\n            }, 3000);\n        }\n\n        // ========== 打赏功能 ==========\n        function openDonate() {\n            // 跳转到公众号文章（打赏链接）\n            window.open('https://mp.weixin.qq.com/s/VAOGD69Vl9f_VHsfgiwStw', '_blank');\n            \n            // 模拟检测是否完成打赏（实际项目中可以通过回调或轮询检测）\n            // 这里为了演示效果，3秒后显示感谢动画\n            setTimeout(() => {\n                showThanks();\n            }, 3000);\n        }\n\n        function showThanks() {\n            const modal = document.getElementById('thanksModal');\n            modal.classList.add('show');\n            hasDonated = true;\n            \n            // 播放庆祝动画\n            celebrate();\n            \n            // 添加额外的可乐雨效果\n            createColaRain();\n        }\n\n        function closeThanks(e) {\n            if (e && e.target !== e.currentTarget && !e.target.classList.contains('close-thanks')) return;\n            document.getElementById('thanksModal').classList.remove('show');\n        }\n\n        function createColaRain() {\n            const modal = document.getElementById('thanksModal');\n            for (let i = 0; i < 20; i++) {\n                setTimeout(() => {\n                    const cola = document.createElement('div');\n                    cola.textContent = '🥤';\n                    cola.style.position = 'absolute';\n                    cola.style.left = Math.random() * 100 + '%';\n                    cola.style.top = '-50px';\n                    cola.style.fontSize = '2em';\n                    cola.style.animation = 'fall 3s linear forwards';\n                    cola.style.zIndex = '2001';\n                    modal.appendChild(cola);\n                    \n                    setTimeout(() => cola.remove(), 3000);\n                }, i * 200);\n            }\n        }\n\n        // ========== 积木工厂逻辑 ==========\n        function generateBlocks() {\n            const perGroup = parseInt(document.getElementById('blockPerGroup').value);\n            const groups = parseInt(document.getElementById('groupCount').value);\n            const container = document.getElementById('blocksContainer');\n            const total = perGroup * groups;\n            \n            document.getElementById('totalBlocks').value = total;\n            container.innerHTML = '';\n            \n            const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#a8e6cf', '#ff8b94', '#c7ceea', '#ffd93d', '#6bcf7f', '#4d96ff'];\n            \n            for (let g = 0; g < groups; g++) {\n                const groupDiv = document.createElement('div');\n                groupDiv.className = 'group';\n                \n                for (let i = 0; i < perGroup; i++) {\n                    const block = document.createElement('div');\n                    block.className = 'block';\n                    block.style.background = colors[g % colors.length];\n                    block.textContent = i + 1;\n                    block.style.animationDelay = (g * perGroup + i) * 0.05 + 's';\n                    groupDiv.appendChild(block);\n                }\n                \n                const label = document.createElement('div');\n                label.style.cssText = 'font-weight: bold; color: #666; margin-top: 5px;';\n                label.textContent = `第${g + 1}堆`;\n                groupDiv.appendChild(label);\n                \n                container.appendChild(groupDiv);\n            }\n            \n            // 显示解释\n            const explanation = document.getElementById('blockExplanation');\n            const text = document.getElementById('explanationText');\n            const formula = document.getElementById('blockFormula');\n            \n            explanation.style.display = 'block';\n            text.innerHTML = `我们有 <strong>${groups}堆</strong> 积木，每堆 <strong>${perGroup}个</strong>。<br>\n                用加法算是：${Array(groups).fill(perGroup).join('+')} = ${total}<br>\n                用乘法算就简单多了：${perGroup} × ${groups} = ${total}`;\n            \n            formula.innerHTML = `${perGroup} × ${groups} = ${total} <span style=\"font-size: 0.5em; color: #999;\">（${groups}个${perGroup}）</span>`;\n            \n            addScore(10);\n        }\n\n        // ========== 糖果商店逻辑 ==========\n        let currentCandy = { price: 2, count: 5 };\n        \n        function initCandyShop() {\n            newCandyProblem();\n        }\n        \n        function newCandyProblem() {\n            currentCandy.price = Math.floor(Math.random() * 4) + 2; // 2-5元\n            currentCandy.count = Math.floor(Math.random() * 6) + 3; // 3-8个\n            \n            document.getElementById('candyPrice').textContent = currentCandy.price;\n            document.getElementById('wantCount').textContent = currentCandy.count;\n            document.getElementById('candyExplanation').style.display = 'none';\n            \n            // 生成糖果\n            const jar = document.getElementById('candyJar');\n            jar.innerHTML = '';\n            const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#a8e6cf'];\n            \n            for (let i = 0; i < currentCandy.count; i++) {\n                const candy = document.createElement('div');\n                candy.className = 'candy';\n                candy.style.background = colors[i % colors.length];\n                candy.style.left = (20 + Math.random() * 60) + '%';\n                candy.style.bottom = (10 + i * 12) + '%';\n                candy.style.animationDelay = Math.random() * 2 + 's';\n                jar.appendChild(candy);\n            }\n        }\n        \n        function shakeJar() {\n            const jar = document.getElementById('candyJar');\n            jar.style.animation = 'shake 0.5s';\n            setTimeout(() => jar.style.animation = '', 500);\n        }\n        \n        function checkCandyAnswer() {\n            const total = currentCandy.price * currentCandy.count;\n            const explanation = document.getElementById('candyExplanation');\n            const solution = document.getElementById('candySolution');\n            \n            explanation.style.display = 'block';\n            solution.innerHTML = `\n                <div style=\"font-size: 1.3em; margin: 10px 0;\">\n                    每个糖果 ${currentCandy.price} 元，买 ${currentCandy.count} 个<br>\n                    = ${currentCandy.price} × ${currentCandy.count}<br>\n                    = <strong style=\"color: #e53e3e; font-size: 1.5em;\">${total} 元</strong>\n                </div>\n                <div style=\"margin-top: 15px; padding: 10px; background: #e6fffa; border-radius: 10px;\">\n                     答对了！这就是乘法的用处，比一个一个加快多了！\n                </div>\n            `;\n            \n            addScore(20);\n        }\n\n        // ========== 口诀探险逻辑 ==========\n        function initMemoryGame() {\n            const level = document.getElementById('memoryLevel').value;\n            const grid = document.getElementById('memoryGrid');\n            grid.innerHTML = '';\n            flippedCards = [];\n            matchedPairs = 0;\n            \n            let maxNum = level === 'easy' ? 5 : level === 'medium' ? 7 : 9;\n            let pairs = [];\n            \n            // 生成配对\n            for (let i = 1; i <= maxNum; i++) {\n                for (let j = 1; j <= (i <= 5 ? 5 : 3); j++) {\n                    if (pairs.length < 8) { // 限制卡片数量\n                        pairs.push({\n                            id: pairs.length,\n                            equation: `${i}×${j}`,\n                            answer: (i * j).toString(),\n                            pairId: pairs.length\n                        });\n                        pairs.push({\n                            id: pairs.length,\n                            equation: (i * j).toString(),\n                            answer: `${i}×${j}`,\n                            pairId: pairs.length - 1\n                        });\n                    }\n                }\n            }\n            \n            // 随机选择8对\n            const selected = pairs.slice(0, 16);\n            memoryPairs = selected.sort(() => Math.random() - 0.5);\n            \n            memoryPairs.forEach((item, index) => {\n                const card = document.createElement('div');\n                card.className = 'memory-card';\n                card.dataset.index = index;\n                card.dataset.pairId = item.pairId;\n                card.textContent = '?';\n                card.onclick = () => flipCard(card, item);\n                grid.appendChild(card);\n            });\n            \n            updateProgress();\n        }\n        \n        function flipCard(card, item) {\n            if (flippedCards.length >= 2 || card.classList.contains('flipped') || card.classList.contains('matched')) return;\n            \n            card.classList.add('flipped');\n            card.textContent = item.equation;\n            flippedCards.push({ card, item });\n            \n            if (flippedCards.length === 2) {\n                checkMatch();\n            }\n        }\n        \n        function checkMatch() {\n            const [first, second] = flippedCards;\n            const match = first.item.equation === second.item.answer || second.item.equation === first.item.answer;\n            \n            setTimeout(() => {\n                if (match) {\n                    first.card.classList.add('matched');\n                    second.card.classList.add('matched');\n                    matchedPairs++;\n                    addScore(15);\n                    \n                    if (matchedPairs === 8) {\n                        setTimeout(() => {\n                            alert(' 太棒了！你记住了所有口诀！');\n                            celebrate();\n                        }, 500);\n                    }\n                } else {\n                    first.card.classList.remove('flipped');\n                    second.card.classList.remove('flipped');\n                    first.card.textContent = '?';\n                    second.card.textContent = '?';\n                }\n                flippedCards = [];\n                updateProgress();\n            }, 1000);\n        }\n        \n        function updateProgress() {\n            const progress = (matchedPairs / 8) * 100;\n            document.getElementById('memoryProgress').style.width = progress + '%';\n            document.getElementById('memoryProgress').textContent = Math.round(progress) + '%';\n        }\n\n        // ========== 冒险挑战逻辑 ==========\n        const levels = [\n            { type: 'mul', a: 2, b: 3, hint: '2个3相加：3+3=6' },\n            { type: 'mul', a: 3, b: 4, hint: '3个4相加：4+4+4=12' },\n            { type: 'div', a: 12, b: 3, hint: '12里面有几个3？想乘法：3×?=12' },\n            { type: 'mul', a: 5, b: 5, hint: '五五二十五，记住这个特殊的！' },\n            { type: 'div', a: 20, b: 4, hint: '20分成4份，每份几个？' },\n            { type: 'mul', a: 4, b: 6, hint: '4个6：6+6+6+6=24' },\n            { type: 'div', a: 18, b: 3, hint: '18里面有几个3？' },\n            { type: 'mul', a: 7, b: 2, hint: '7个2：2+2+2+2+2+2+2=14' },\n            { type: 'div', a: 15, b: 5, hint: '15分成5份，每份3个' },\n            { type: 'mix', a: 3, b: 8, hint: '3×8=24，记住三八二十四！' }\n        ];\n        \n        function initAdventure() {\n            const selector = document.getElementById('levelSelector');\n            selector.innerHTML = '';\n            \n            for (let i = 1; i <= 10; i++) {\n                const btn = document.createElement('button');\n                btn.className = 'level-btn';\n                btn.textContent = i;\n                \n                if (i <= unlockedLevels) btn.classList.add('unlocked');\n                if (i === currentLevel) btn.classList.add('current');\n                \n                btn.onclick = () => loadLevel(i);\n                selector.appendChild(btn);\n            }\n        }\n        \n        function loadLevel(level) {\n            if (level > unlockedLevels) return;\n            currentLevel = level;\n            \n            const q = levels[level - 1];\n            const questionBox = document.getElementById('questionText');\n            const optionsBox = document.getElementById('answerOptions');\n            const hintBox = document.getElementById('adventureHint');\n            const hintText = document.getElementById('hintText');\n            \n            initAdventure(); // 刷新按钮状态\n            \n            let question, answer, wrongAnswers;\n            \n            if (q.type === 'mul') {\n                question = `${q.a} × ${q.b} = ?`;\n                answer = q.a * q.b;\n            } else if (q.type === 'div') {\n                question = `${q.a} ÷ ${q.b} = ?`;\n                answer = q.a / q.b;\n            } else {\n                question = Math.random() > 0.5 ? `${q.a} × ${q.b} = ?` : `${q.a * q.b} ÷ ${q.a} = ?`;\n                answer = q.b;\n            }\n            \n            wrongAnswers = [answer + 1, answer - 1, answer + 2].filter(a => a > 0 && a !== answer);\n            wrongAnswers = wrongAnswers.slice(0, 3);\n            const allOptions = [answer, ...wrongAnswers].sort(() => Math.random() - 0.5);\n            \n            questionBox.innerHTML = `<span style=\"color: #667eea;\">第 ${level} 关</span><br>${question}`;\n            optionsBox.innerHTML = '';\n            hintText.textContent = q.hint;\n            hintBox.classList.remove('show');\n            \n            allOptions.forEach(opt => {\n                const btn = document.createElement('button');\n                btn.className = 'option-btn';\n                btn.textContent = opt;\n                btn.onclick = () => checkAnswer(btn, opt === answer, level);\n                optionsBox.appendChild(btn);\n            });\n            \n            // 3秒后显示提示\n            setTimeout(() => hintBox.classList.add('show'), 3000);\n        }\n        \n        function checkAnswer(btn, isCorrect, level) {\n            if (isCorrect) {\n                btn.classList.add('correct');\n                addScore(50);\n                \n                setTimeout(() => {\n                    if (level === currentLevel && level < 10) {\n                        unlockedLevels = Math.max(unlockedLevels, level + 1);\n                        loadLevel(level + 1);\n                    } else if (level === 10) {\n                        document.getElementById('questionText').innerHTML = \n                            ' 恭喜你！<br>你已经成为乘除法小超人了！<br>⭐⭐⭐';\n                        document.getElementById('answerOptions').innerHTML = '';\n                        celebrate();\n                    }\n                }, 1000);\n            } else {\n                btn.classList.add('wrong');\n                setTimeout(() => btn.classList.remove('wrong'), 500);\n            }\n        }\n\n        // 初始化\n        window.onload = () => {\n            generateBlocks();\n            initCandyShop();\n        };\n    </script>\n</body>\n</html>\n\n", "createdAt": 1700000000000, "updatedAt": 1700000000000, "shareCount": 5};
+export const demoApp: AppItem = {
+  id: "demo-math-app-001",
+  name: "乘法教学3",
+  title: "数学小超人：乘除法大冒险",
+  description: "适合7岁小朋友的乘除法学习游戏，包含积木工厂、糖果商店、口诀探险和冒险挑战四个模块",
+  thumbnail: null,
+  htmlContent: `乘法教学3
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数学小超人：乘除法大冒险</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', '微软雅黑', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            padding: 30px 0;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h1 {
+            font-size: 3em;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            opacity: 0.95;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .tab-btn.active {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .tab-btn:nth-child(1) { background: #ff6b6b; color: white; }
+        .tab-btn:nth-child(2) { background: #4ecdc4; color: white; }
+        .tab-btn:nth-child(3) { background: #ffe66d; color: #333; }
+        .tab-btn:nth-child(4) { background: #a8e6cf; color: #333; }
+
+        .tab-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .game-section {
+            display: none;
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            animation: fadeIn 0.5s;
+        }
+
+        .game-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            color: #5a67d8;
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* 积木工厂样式 */
+        .block-factory {
+            text-align: center;
+        }
+
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .input-group label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="number"] {
+            width: 80px;
+            padding: 10px;
+            font-size: 1.5em;
+            text-align: center;
+            border: 3px solid #ddd;
+            border-radius: 15px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-weight: bold;
+            margin: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+        }
+
+        .blocks-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin: 30px 0;
+            min-height: 200px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 20px;
+            border: 3px dashed #cbd5e0;
+        }
+
+        .group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 10px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .block {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            color: white;
+            animation: popIn 0.3s;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .block:hover {
+            transform: rotate(5deg) scale(1.1);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            80% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .explanation {
+            background: #e6fffa;
+            border-left: 5px solid #38b2ac;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
+
+        .math-formula {
+            font-size: 2em;
+            color: #5a67d8;
+            font-weight: bold;
+            margin: 20px 0;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* 糖果商店样式 */
+        .candy-shop {
+            text-align: center;
+        }
+
+        .shop-scene {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 40px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .shelf {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .candy-jar {
+            width: 120px;
+            height: 150px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+            border: 4px solid #ffb6c1;
+            border-radius: 20px 20px 40px 40px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .candy-jar:hover {
+            transform: scale(1.05);
+        }
+
+        .candy {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            position: absolute;
+            animation: float 3s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .customer {
+            font-size: 4em;
+            animation: wiggle 2s infinite;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        .speech-bubble {
+            background: white;
+            border: 3px solid #333;
+            border-radius: 20px;
+            padding: 15px;
+            position: relative;
+            max-width: 250px;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 10px 10px 0;
+            border-style: solid;
+            border-color: #333 transparent transparent;
+        }
+
+        .price-tag {
+            background: #ffe66d;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        /* 口诀探险样式 */
+        .memory-game {
+            text-align: center;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e2e8f0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #48bb78, #38a169);
+            width: 0%;
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            max-width: 800px;
+            margin: 30px auto;
+        }
+
+        .memory-card {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            transform-style: preserve-3d;
+            position: relative;
+        }
+
+        .memory-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .memory-card.flipped {
+            background: white;
+            color: #333;
+            border: 3px solid #667eea;
+        }
+
+        .memory-card.matched {
+            background: #48bb78;
+            animation: pulse 0.5s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* 冒险挑战样式 */
+        .adventure-game {
+            text-align: center;
+        }
+
+        .level-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .level-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 4px solid #ddd;
+            background: white;
+            font-size: 1.5em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .level-btn.unlocked {
+            border-color: #48bb78;
+            background: #c6f6d5;
+        }
+
+        .level-btn.current {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+            animation: glow 1.5s infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px #667eea; }
+            50% { box-shadow: 0 0 20px #667eea, 0 0 40px #667eea; }
+        }
+
+        .question-box {
+            background: linear-gradient(135deg, #f6f8fb, #e9edf5);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            border: 3px solid #cbd5e0;
+        }
+
+        .question-text {
+            font-size: 2em;
+            color: #2d3748;
+            margin-bottom: 30px;
+        }
+
+        .answer-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .option-btn {
+            padding: 20px;
+            font-size: 1.5em;
+            border: 3px solid #cbd5e0;
+            background: white;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover {
+            background: #e6fffa;
+            border-color: #38b2ac;
+            transform: translateY(-2px);
+        }
+
+        .option-btn.correct {
+            background: #c6f6d5;
+            border-color: #48bb78;
+            animation: correct 0.5s;
+        }
+
+        .option-btn.wrong {
+            background: #fed7d7;
+            border-color: #f56565;
+            animation: shake 0.5s;
+        }
+
+        @keyframes correct {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .stars {
+            font-size: 2em;
+            margin: 20px 0;
+        }
+
+        .hint-box {
+            background: #fffaf0;
+            border: 2px solid #f6ad55;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .hint-box.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        /* 打赏区域样式 */
+        .donate-section {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 30px;
+            padding: 40px;
+            margin: 40px 0;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border: 4px dashed #ff8c69;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .donate-section::before {
+            content: '☕';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 100px;
+            opacity: 0.1;
+            transform: rotate(15deg);
+        }
+
+        .donate-title {
+            font-size: 2em;
+            color: #e8532d;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.5);
+        }
+
+        .donate-desc {
+            font-size: 1.2em;
+            color: #744210;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .donate-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 20px 50px;
+            font-size: 1.4em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            box-shadow: 0 6px 20px rgba(238, 90, 36, 0.4);
+            position: relative;
+            overflow: hidden;
+            animation: pulse-btn 2s infinite;
+        }
+
+        @keyframes pulse-btn {
+            0%, 100% { transform: scale(1); box-shadow: 0 6px 20px rgba(238, 90, 36, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 8px 30px rgba(238, 90, 36, 0.6); }
+        }
+
+        .donate-btn:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 10px 40px rgba(238, 90, 36, 0.5);
+        }
+
+        .donate-btn::after {
+            content: '🥤';
+            margin-left: 10px;
+            font-size: 1.2em;
+        }
+
+        .donate-features {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .feature-item {
+            background: rgba(255,255,255,0.6);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.95em;
+            color: #744210;
+            font-weight: bold;
+        }
+
+        /* 感谢动画模态框 */
+        .thanks-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .thanks-modal.show {
+            display: flex;
+            animation: fadeIn 0.5s;
+        }
+
+        .thanks-content {
+            background: white;
+            border-radius: 40px;
+            padding: 50px;
+            max-width: 600px;
+            text-align: center;
+            position: relative;
+            animation: slideUp 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border: 5px solid #ffd93d;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100px) scale(0.8); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .thanks-emoji {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: crazy-dance 1s infinite;
+        }
+
+        @keyframes crazy-dance {
+            0%, 100% { transform: rotate(-10deg) scale(1); }
+            25% { transform: rotate(10deg) scale(1.2); }
+            50% { transform: rotate(-10deg) scale(1); }
+            75% { transform: rotate(10deg) scale(1.2); }
+        }
+
+        .thanks-title {
+            font-size: 2.5em;
+            color: #e8532d;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-shadow: 3px 3px 0px #ffeaa7;
+        }
+
+        .thanks-text {
+            font-size: 1.3em;
+            color: #2d3436;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .thanks-joke {
+            background: #fff5f5;
+            border-left: 5px solid #ff6b6b;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 15px;
+            font-size: 1.1em;
+            color: #d63031;
+            font-style: italic;
+            text-align: left;
+        }
+
+        .close-thanks {
+            background: linear-gradient(45deg, #00b894, #00cec9);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .close-thanks:hover {
+            transform: scale(1.1);
+        }
+
+        .flying-cola {
+            position: absolute;
+            font-size: 3em;
+            animation: fly-around 3s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes fly-around {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(100px, -100px) rotate(90deg); }
+            50% { transform: translate(0, -200px) rotate(180deg); }
+            75% { transform: translate(-100px, -100px) rotate(270deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            h1 { font-size: 2em; }
+            .section-title { font-size: 1.5em; }
+            .tab-btn { padding: 10px 20px; font-size: 1em; }
+            .blocks-container { gap: 10px; }
+            .block { width: 40px; height: 40px; font-size: 1em; }
+            .donate-title { font-size: 1.5em; }
+            .thanks-content { padding: 30px 20px; margin: 20px; }
+            .thanks-title { font-size: 1.8em; }
+        }
+
+        /* 庆祝动画 */
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #f0f;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .score-board {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #5a67d8;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div class="score-board">⭐ 积分: <span id="totalScore">0</span></div>
+    
+    <div class="container">
+        <header>
+            <h1> 数学小超人</h1>
+            <p class="subtitle">乘除法大冒险 · 适合7岁小朋友</p>
+        </header>
+
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('blocks')"> 积木工厂</button>
+            <button class="tab-btn" onclick="switchTab('candy')"> 糖果商店</button>
+            <button class="tab-btn" onclick="switchTab('memory')">🧠 口诀探险</button>
+            <button class="tab-btn" onclick="switchTab('adventure')">⚔️ 冒险挑战</button>
+        </div>
+
+        <!-- 积木工厂：理解乘法本质 -->
+        <section id="blocks" class="game-section active">
+            <h2 class="section-title"> 积木工厂：乘法是"几个几"</h2>
+            <div class="block-factory">
+                <p style="font-size: 1.2em; color: #666; margin-bottom: 20px;">
+                    小朋友，我们来玩积木！<br>
+                    选择<strong>每堆几个</strong>和<strong>有几堆</strong>，看看乘法是怎么算的～
+                </p>
+                
+                <div class="controls">
+                    <div class="input-group">
+                        <label>每堆几个？</label>
+                        <input type="number" id="blockPerGroup" min="1" max="9" value="3">
+                    </div>
+                    <div style="font-size: 2em; color: #999;">×</div>
+                    <div class="input-group">
+                        <label>有几堆？</label>
+                        <input type="number" id="groupCount" min="1" max="9" value="4">
+                    </div>
+                    <div style="font-size: 2em; color: #999;">=</div>
+                    <div class="input-group">
+                        <label>总共？</label>
+                        <input type="number" id="totalBlocks" readonly style="background: #f0f0f0;">
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="generateBlocks()">生成积木！</button>
+                
+                <div class="blocks-container" id="blocksContainer"></div>
+                
+                <div class="explanation" id="blockExplanation" style="display: none;">
+                    <strong> 小发现：</strong>
+                    <span id="explanationText"></span>
+                </div>
+
+                <div class="math-formula" id="blockFormula"></div>
+            </div>
+        </section>
+
+        <!-- 糖果商店：生活场景应用 -->
+        <section id="candy" class="game-section">
+            <h2 class="section-title"> 糖果商店：乘法的用处</h2>
+            <div class="candy-shop">
+                <p style="font-size: 1.2em; color: #666; margin-bottom: 20px;">
+                    小熊来买糖啦！帮它算一算需要多少钱？
+                </p>
+
+                <div class="shop-scene">
+                    <div class="shelf">
+                        <div class="candy-jar" id="candyJar" onclick="shakeJar()">
+                            <!-- 糖果由JS生成 -->
+                        </div>
+                        <div class="price-tag">每个 <span id="candyPrice">2</span> 元</div>
+                    </div>
+                    
+                    <div style="font-size: 3em; color: #999;">×</div>
+                    
+                    <div class="customer-area">
+                        <div class="speech-bubble" id="customerSpeech">
+                            我要买 <strong id="wantCount">5</strong> 个糖果！<br>
+                            一共需要多少钱？
+                        </div>
+                        <div class="customer"></div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="btn-primary" onclick="checkCandyAnswer()" id="calcBtn">算一算</button>
+                    <button class="btn-primary" onclick="newCandyProblem()" style="background: linear-gradient(45deg, #f093fb, #f5576c);">下一题</button>
+                </div>
+
+                <div class="explanation" id="candyExplanation" style="display: none;">
+                    <strong> 解题思路：</strong>
+                    <div id="candySolution"></div>
+                </div>
+
+                <div style="margin-top: 30px; padding: 20px; background: #fff5f5; border-radius: 15px;">
+                    <h3 style="color: #e53e3e; margin-bottom: 10px;"> 游戏玩法：</h3>
+                    <p>1. 点击糖果罐数一数有多少个糖果</p>
+                    <p>2. 每个糖果的价格 × 个数 = 总价格</p>
+                    <p>3. 这就是乘法在生活中的用法！</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 口诀探险：记忆游戏 -->
+        <section id="memory" class="game-section">
+            <h2 class="section-title">🧠 口诀探险：找朋友</h2>
+            <div class="memory-game">
+                <p style="font-size: 1.2em; color: #666; margin-bottom: 20px;">
+                    翻开卡片，找到算式和答案的配对！<br>
+                    比如 "3×4" 和 "12" 是好朋友～
+                </p>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="memoryProgress">0%</div>
+                </div>
+
+                <div class="card-grid" id="memoryGrid"></div>
+
+                <div class="controls">
+                    <button class="btn-primary" onclick="initMemoryGame()">重新开始</button>
+                    <select id="memoryLevel" onchange="initMemoryGame()" style="padding: 10px; font-size: 1.1em; border-radius: 10px; border: 2px solid #ddd;">
+                        <option value="easy">简单 (1-5口诀)</option>
+                        <option value="medium">中等 (1-7口诀)</option>
+                        <option value="hard">困难 (1-9口诀)</option>
+                    </select>
+                </div>
+
+                <div class="hint-box" id="memoryHint">
+                     <strong>记忆小窍门：</strong> 先记住你会的，比如2×5=10（像手指），5×5=25（五五二十五）！
+                </div>
+            </div>
+        </section>
+
+        <!-- 冒险挑战：综合练习 -->
+        <section id="adventure" class="game-section">
+            <h2 class="section-title">⚔️ 冒险挑战：小勇士试炼</h2>
+            <div class="adventure-game">
+                <p style="font-size: 1.2em; color: #666; margin-bottom: 20px;">
+                    闯过10关，成为乘除法小超人！
+                </p>
+
+                <div class="level-selector" id="levelSelector"></div>
+
+                <div class="question-box" id="questionBox">
+                    <div class="question-text" id="questionText">点击上面的关卡开始冒险！</div>
+                    <div class="answer-options" id="answerOptions"></div>
+                </div>
+
+                <div class="hint-box" id="adventureHint">
+                     <strong>提示：</strong> <span id="hintText"></span>
+                </div>
+
+                <div class="stars" id="starDisplay"></div>
+            </div>
+        </section>
+
+        <!-- 打赏区域 -->
+        <section class="donate-section">
+            <div class="donate-title">🥤 请作者喝个可乐！</div>
+            <div class="donate-desc">
+                如果这个工具帮到了你家小宝贝<br>
+                3块钱，让作者熬夜写代码的手不再颤抖～<br>
+                <small style="color: #999;">（或者让小朋友用刚学的乘法算算：1瓶可乐3元，作者想喝2瓶要多少钱？）</small>
+            </div>
+            
+            <button class="donate-btn" onclick="openDonate()">
+                3元请作者喝个可乐
+            </button>
+            
+            <div class="donate-features">
+                <div class="feature-item"> 永久免费使用</div>
+                <div class="feature-item"> 持续更新内容</div>
+                <div class="feature-item">❤️ 支持教育公益</div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; color: rgba(255,255,255,0.8); padding: 20px; font-size: 0.9em;">
+            <p>Made with 🧡 for 7-year-old math heroes | 让数学变得好玩起来</p>
+        </footer>
+    </div>
+
+    <!-- 感谢动画模态框 -->
+    <div class="thanks-modal" id="thanksModal" onclick="closeThanks(event)">
+        <div class="thanks-content" onclick="event.stopPropagation()">
+            <div class="thanks-emoji">🥤🥤</div>
+            <div class="thanks-title">哇！真的假的！</div>
+            <div class="thanks-text">
+                <strong>这位家长/小朋友，您太客气了！</strong><br><br>
+                您的3元巨款已收到！<br>
+                作者正在飞奔去便利店买可乐...<br>
+                <em style="color: #e8532d; font-size: 0.9em;">（如果便利店关门了，我就买瓶矿泉水假装是可乐）</em>
+            </div>
+            
+            <div class="thanks-joke">
+                <strong> 冷知识：</strong><br>
+                您刚才的打赏动作，比小朋友算对一道乘法题还快！<br>
+                建议让小朋友算一下：如果每天3个人打赏，作者一周能买几瓶可乐？<br>
+                <small>（答案：21瓶，会喝撑的，建议分我一点）</small>
+            </div>
+
+            <div style="margin: 20px 0; padding: 15px; background: #e8f5e9; border-radius: 15px; font-size: 1em; color: #2e7d32;">
+                <strong> 特别承诺：</strong><br>
+                您的支持将用于：<br>
+                1. 购买更多咖啡因 ☕<br>
+                2. 修复bug时保持清醒 <br>
+                3. 给服务器续命（它快饿死了）️
+            </div>
+
+            <button class="close-thanks" onclick="closeThanks()">
+                关闭（作者去喝可乐了）‍♂️
+            </button>
+
+            <div style="margin-top: 20px; font-size: 0.9em; color: #999;">
+                <em>P.S. 如果小朋友问"为什么要给钱"，您可以告诉他：<br>
+                "这是给努力工作的程序员的奖励，就像你考100分妈妈给你买玩具一样！"</em>
+            </div>
+        </div>
+        
+        <!-- 飞舞的可乐 -->
+        <div class="flying-cola" style="top: 10%; left: 10%; animation-delay: 0s;">🥤</div>
+        <div class="flying-cola" style="top: 20%; right: 15%; animation-delay: 0.5s;">🥤</div>
+        <div class="flying-cola" style="bottom: 30%; left: 20%; animation-delay: 1s;">🥤</div>
+        <div class="flying-cola" style="bottom: 20%; right: 10%; animation-delay: 1.5s;">🥤</div>
+        <div class="flying-cola" style="top: 50%; left: 5%; animation-delay: 2s;">🥤</div>
+        <div class="flying-cola" style="top: 60%; right: 5%; animation-delay: 2.5s;">🥤</div>
+    </div>
+
+    <div class="celebration" id="celebration"></div>
+
+    <script>
+        // 全局状态
+        let totalScore = 0;
+        let currentLevel = 1;
+        let unlockedLevels = 1;
+        let memoryPairs = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let hasDonated = false;
+
+        // 切换标签页
+        function switchTab(tabName) {
+            document.querySelectorAll('.game-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabName === 'memory') initMemoryGame();
+            if (tabName === 'adventure') initAdventure();
+        }
+
+        // 更新积分
+        function addScore(points) {
+            totalScore += points;
+            document.getElementById('totalScore').textContent = totalScore;
+            celebrate();
+        }
+
+        // 庆祝动画
+        function celebrate() {
+            const celebration = document.getElementById('celebration');
+            celebration.style.display = 'block';
+            celebration.innerHTML = '';
+            
+            const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#a8e6cf', '#ff8b94'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                celebration.appendChild(confetti);
+            }
+            
+            setTimeout(() => {
+                celebration.style.display = 'none';
+            }, 3000);
+        }
+
+        // ========== 打赏功能 ==========
+        function openDonate() {
+            // 跳转到公众号文章（打赏链接）
+            window.open('https://mp.weixin.qq.com/s/VAOGD69Vl9f_VHsfgiwStw', '_blank');
+            
+            // 模拟检测是否完成打赏（实际项目中可以通过回调或轮询检测）
+            // 这里为了演示效果，3秒后显示感谢动画
+            setTimeout(() => {
+                showThanks();
+            }, 3000);
+        }
+
+        function showThanks() {
+            const modal = document.getElementById('thanksModal');
+            modal.classList.add('show');
+            hasDonated = true;
+            
+            // 播放庆祝动画
+            celebrate();
+            
+            // 添加额外的可乐雨效果
+            createColaRain();
+        }
+
+        function closeThanks(e) {
+            if (e && e.target !== e.currentTarget && !e.target.classList.contains('close-thanks')) return;
+            document.getElementById('thanksModal').classList.remove('show');
+        }
+
+        function createColaRain() {
+            const modal = document.getElementById('thanksModal');
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const cola = document.createElement('div');
+                    cola.textContent = '🥤';
+                    cola.style.position = 'absolute';
+                    cola.style.left = Math.random() * 100 + '%';
+                    cola.style.top = '-50px';
+                    cola.style.fontSize = '2em';
+                    cola.style.animation = 'fall 3s linear forwards';
+                    cola.style.zIndex = '2001';
+                    modal.appendChild(cola);
+                    
+                    setTimeout(() => cola.remove(), 3000);
+                }, i * 200);
+            }
+        }
+
+        // ========== 积木工厂逻辑 ==========
+        function generateBlocks() {
+            const perGroup = parseInt(document.getElementById('blockPerGroup').value);
+            const groups = parseInt(document.getElementById('groupCount').value);
+            const container = document.getElementById('blocksContainer');
+            const total = perGroup * groups;
+            
+            document.getElementById('totalBlocks').value = total;
+            container.innerHTML = '';
+            
+            const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#a8e6cf', '#ff8b94', '#c7ceea', '#ffd93d', '#6bcf7f', '#4d96ff'];
+            
+            for (let g = 0; g < groups; g++) {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'group';
+                
+                for (let i = 0; i < perGroup; i++) {
+                    const block = document.createElement('div');
+                    block.className = 'block';
+                    block.style.background = colors[g % colors.length];
+                    block.textContent = i + 1;
+                    block.style.animationDelay = (g * perGroup + i) * 0.05 + 's';
+                    groupDiv.appendChild(block);
+                }
+                
+                const label = document.createElement('div');
+                label.style.cssText = 'font-weight: bold; color: #666; margin-top: 5px;';
+                label.textContent = `第${g + 1}堆`;
+                groupDiv.appendChild(label);
+                
+                container.appendChild(groupDiv);
+            }
+            
+            // 显示解释
+            const explanation = document.getElementById('blockExplanation');
+            const text = document.getElementById('explanationText');
+            const formula = document.getElementById('blockFormula');
+            
+            explanation.style.display = 'block';
+            text.innerHTML = `我们有 <strong>${groups}堆</strong> 积木，每堆 <strong>${perGroup}个</strong>。<br>
+                用加法算是：${Array(groups).fill(perGroup).join('+')} = ${total}<br>
+                用乘法算就简单多了：${perGroup} × ${groups} = ${total}`;
+            
+            formula.innerHTML = `${perGroup} × ${groups} = ${total} <span style="font-size: 0.5em; color: #999;">（${groups}个${perGroup}）</span>`;
+            
+            addScore(10);
+        }
+
+        // ========== 糖果商店逻辑 ==========
+        let currentCandy = { price: 2, count: 5 };
+        
+        function initCandyShop() {
+            newCandyProblem();
+        }
+        
+        function newCandyProblem() {
+            currentCandy.price = Math.floor(Math.random() * 4) + 2; // 2-5元
+            currentCandy.count = Math.floor(Math.random() * 6) + 3; // 3-8个
+            
+            document.getElementById('candyPrice').textContent = currentCandy.price;
+            document.getElementById('wantCount').textContent = currentCandy.count;
+            document.getElementById('candyExplanation').style.display = 'none';
+            
+            // 生成糖果
+            const jar = document.getElementById('candyJar');
+            jar.innerHTML = '';
+            const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#a8e6cf'];
+            
+            for (let i = 0; i < currentCandy.count; i++) {
+                const candy = document.createElement('div');
+                candy.className = 'candy';
+                candy.style.background = colors[i % colors.length];
+                candy.style.left = (20 + Math.random() * 60) + '%';
+                candy.style.bottom = (10 + i * 12) + '%';
+                candy.style.animationDelay = Math.random() * 2 + 's';
+                jar.appendChild(candy);
+            }
+        }
+        
+        function shakeJar() {
+            const jar = document.getElementById('candyJar');
+            jar.style.animation = 'shake 0.5s';
+            setTimeout(() => jar.style.animation = '', 500);
+        }
+        
+        function checkCandyAnswer() {
+            const total = currentCandy.price * currentCandy.count;
+            const explanation = document.getElementById('candyExplanation');
+            const solution = document.getElementById('candySolution');
+            
+            explanation.style.display = 'block';
+            solution.innerHTML = `
+                <div style="font-size: 1.3em; margin: 10px 0;">
+                    每个糖果 ${currentCandy.price} 元，买 ${currentCandy.count} 个<br>
+                    = ${currentCandy.price} × ${currentCandy.count}<br>
+                    = <strong style="color: #e53e3e; font-size: 1.5em;">${total} 元</strong>
+                </div>
+                <div style="margin-top: 15px; padding: 10px; background: #e6fffa; border-radius: 10px;">
+                     答对了！这就是乘法的用处，比一个一个加快多了！
+                </div>
+            `;
+            
+            addScore(20);
+        }
+
+        // ========== 口诀探险逻辑 ==========
+        function initMemoryGame() {
+            const level = document.getElementById('memoryLevel').value;
+            const grid = document.getElementById('memoryGrid');
+            grid.innerHTML = '';
+            flippedCards = [];
+            matchedPairs = 0;
+            
+            let maxNum = level === 'easy' ? 5 : level === 'medium' ? 7 : 9;
+            let pairs = [];
+            
+            // 生成配对
+            for (let i = 1; i <= maxNum; i++) {
+                for (let j = 1; j <= (i <= 5 ? 5 : 3); j++) {
+                    if (pairs.length < 8) { // 限制卡片数量
+                        pairs.push({
+                            id: pairs.length,
+                            equation: `${i}×${j}`,
+                            answer: (i * j).toString(),
+                            pairId: pairs.length
+                        });
+                        pairs.push({
+                            id: pairs.length,
+                            equation: (i * j).toString(),
+                            answer: `${i}×${j}`,
+                            pairId: pairs.length - 1
+                        });
+                    }
+                }
+            }
+            
+            // 随机选择8对
+            const selected = pairs.slice(0, 16);
+            memoryPairs = selected.sort(() => Math.random() - 0.5);
+            
+            memoryPairs.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'memory-card';
+                card.dataset.index = index;
+                card.dataset.pairId = item.pairId;
+                card.textContent = '?';
+                card.onclick = () => flipCard(card, item);
+                grid.appendChild(card);
+            });
+            
+            updateProgress();
+        }
+        
+        function flipCard(card, item) {
+            if (flippedCards.length >= 2 || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+            
+            card.classList.add('flipped');
+            card.textContent = item.equation;
+            flippedCards.push({ card, item });
+            
+            if (flippedCards.length === 2) {
+                checkMatch();
+            }
+        }
+        
+        function checkMatch() {
+            const [first, second] = flippedCards;
+            const match = first.item.equation === second.item.answer || second.item.equation === first.item.answer;
+            
+            setTimeout(() => {
+                if (match) {
+                    first.card.classList.add('matched');
+                    second.card.classList.add('matched');
+                    matchedPairs++;
+                    addScore(15);
+                    
+                    if (matchedPairs === 8) {
+                        setTimeout(() => {
+                            alert(' 太棒了！你记住了所有口诀！');
+                            celebrate();
+                        }, 500);
+                    }
+                } else {
+                    first.card.classList.remove('flipped');
+                    second.card.classList.remove('flipped');
+                    first.card.textContent = '?';
+                    second.card.textContent = '?';
+                }
+                flippedCards = [];
+                updateProgress();
+            }, 1000);
+        }
+        
+        function updateProgress() {
+            const progress = (matchedPairs / 8) * 100;
+            document.getElementById('memoryProgress').style.width = progress + '%';
+            document.getElementById('memoryProgress').textContent = Math.round(progress) + '%';
+        }
+
+        // ========== 冒险挑战逻辑 ==========
+        const levels = [
+            { type: 'mul', a: 2, b: 3, hint: '2个3相加：3+3=6' },
+            { type: 'mul', a: 3, b: 4, hint: '3个4相加：4+4+4=12' },
+            { type: 'div', a: 12, b: 3, hint: '12里面有几个3？想乘法：3×?=12' },
+            { type: 'mul', a: 5, b: 5, hint: '五五二十五，记住这个特殊的！' },
+            { type: 'div', a: 20, b: 4, hint: '20分成4份，每份几个？' },
+            { type: 'mul', a: 4, b: 6, hint: '4个6：6+6+6+6=24' },
+            { type: 'div', a: 18, b: 3, hint: '18里面有几个3？' },
+            { type: 'mul', a: 7, b: 2, hint: '7个2：2+2+2+2+2+2+2=14' },
+            { type: 'div', a: 15, b: 5, hint: '15分成5份，每份3个' },
+            { type: 'mix', a: 3, b: 8, hint: '3×8=24，记住三八二十四！' }
+        ];
+        
+        function initAdventure() {
+            const selector = document.getElementById('levelSelector');
+            selector.innerHTML = '';
+            
+            for (let i = 1; i <= 10; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'level-btn';
+                btn.textContent = i;
+                
+                if (i <= unlockedLevels) btn.classList.add('unlocked');
+                if (i === currentLevel) btn.classList.add('current');
+                
+                btn.onclick = () => loadLevel(i);
+                selector.appendChild(btn);
+            }
+        }
+        
+        function loadLevel(level) {
+            if (level > unlockedLevels) return;
+            currentLevel = level;
+            
+            const q = levels[level - 1];
+            const questionBox = document.getElementById('questionText');
+            const optionsBox = document.getElementById('answerOptions');
+            const hintBox = document.getElementById('adventureHint');
+            const hintText = document.getElementById('hintText');
+            
+            initAdventure(); // 刷新按钮状态
+            
+            let question, answer, wrongAnswers;
+            
+            if (q.type === 'mul') {
+                question = `${q.a} × ${q.b} = ?`;
+                answer = q.a * q.b;
+            } else if (q.type === 'div') {
+                question = `${q.a} ÷ ${q.b} = ?`;
+                answer = q.a / q.b;
+            } else {
+                question = Math.random() > 0.5 ? `${q.a} × ${q.b} = ?` : `${q.a * q.b} ÷ ${q.a} = ?`;
+                answer = q.b;
+            }
+            
+            wrongAnswers = [answer + 1, answer - 1, answer + 2].filter(a => a > 0 && a !== answer);
+            wrongAnswers = wrongAnswers.slice(0, 3);
+            const allOptions = [answer, ...wrongAnswers].sort(() => Math.random() - 0.5);
+            
+            questionBox.innerHTML = `<span style="color: #667eea;">第 ${level} 关</span><br>${question}`;
+            optionsBox.innerHTML = '';
+            hintText.textContent = q.hint;
+            hintBox.classList.remove('show');
+            
+            allOptions.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => checkAnswer(btn, opt === answer, level);
+                optionsBox.appendChild(btn);
+            });
+            
+            // 3秒后显示提示
+            setTimeout(() => hintBox.classList.add('show'), 3000);
+        }
+        
+        function checkAnswer(btn, isCorrect, level) {
+            if (isCorrect) {
+                btn.classList.add('correct');
+                addScore(50);
+                
+                setTimeout(() => {
+                    if (level === currentLevel && level < 10) {
+                        unlockedLevels = Math.max(unlockedLevels, level + 1);
+                        loadLevel(level + 1);
+                    } else if (level === 10) {
+                        document.getElementById('questionText').innerHTML = 
+                            ' 恭喜你！<br>你已经成为乘除法小超人了！<br>⭐⭐⭐';
+                        document.getElementById('answerOptions').innerHTML = '';
+                        celebrate();
+                    }
+                }, 1000);
+            } else {
+                btn.classList.add('wrong');
+                setTimeout(() => btn.classList.remove('wrong'), 500);
+            }
+        }
+
+        // 初始化
+        window.onload = () => {
+            generateBlocks();
+            initCandyShop();
+        };
+    </script>
+</body>
+</html>`,
+  shareCount: 5,
+  isPublic: false,  // 👈 添加这一行
+  createdAt: 1700000000000,
+  updatedAt: 1700000000000
+};
