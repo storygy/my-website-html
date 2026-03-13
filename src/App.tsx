@@ -59,6 +59,29 @@ function App() {
   const [deleteAppItem, setDeleteAppItem] = useState<AppItem | null>(null);
   const [qrCodeApp, setQrCodeApp] = useState<AppItem | null>(null);
 
+  // 🆕 新增：切换公开状态函数
+  const handleTogglePublic = useCallback(async (app: AppItem) => {
+    try {
+      const newPublicStatus = !app.isPublic;
+      
+      // 更新本地状态
+      updateApp(app.id, { isPublic: newPublicStatus });
+      
+      // 如果已登录，同步到云端
+      if (user && sync) {
+        const updatedApps = apps.map(a => 
+          a.id === app.id ? { ...a, isPublic: newPublicStatus } : a
+        );
+        // 注意：这里需要手动同步，或者你可以调用 sync()
+        // 如果你有直接的同步函数，可以在这里调用
+      }
+    } catch (error) {
+      console.error('切换公开状态失败:', error);
+      // 失败时恢复原状态
+      updateApp(app.id, { isPublic: app.isPublic });
+    }
+  }, [apps, user, updateApp, sync]);
+
   // 解析路由
   const route = hash.replace('#/', '').split('/');
   const isAppRoute = route[0] === 'app' && route[1];
@@ -88,9 +111,9 @@ function App() {
 
   // 过滤应用
   const filteredApps = apps.filter(app => 
-    app.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    app.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    app.description.toLowerCase().includes(searchQuery.toLowerCase())
+    (app.name?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+    (app.title?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+    (app.description?.toLowerCase() || '').includes(searchQuery.toLowerCase())
   );
 
   // 处理上传
@@ -356,11 +379,12 @@ function App() {
               <AppCard
                 key={app.id}
                 app={app}
-                onPreview={setPreviewApp}
+                onPreview={() => setPreviewApp(app)}
                 onShare={handleShare}
-                onQrCode={setQrCodeApp}
-                onEdit={setEditApp}
-                onDelete={setDeleteAppItem}
+                onQrCode={() => setQrCodeApp(app)}
+                onEdit={() => setEditApp(app)}
+                onDelete={() => setDeleteAppItem(app)}
+                onTogglePublic={handleTogglePublic}
               />
             ))}
           </div>
@@ -397,6 +421,7 @@ function App() {
         open={!!shareApp}
         onOpenChange={(open) => !open && setShareApp(null)}
         onShareWechat={handleShareWechat}
+        onTogglePublic={handleTogglePublic}
       />
 
       <PreviewDialog
